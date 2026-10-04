@@ -1,0 +1,44 @@
+Subject: src/makeint.h, src/misc.c, src/mkcustom.h: keep the system's SA_RESTART and mempcpy
+
+makeint.h defines SA_RESTART as 0 unless configure found it; on VMS
+(config.h-vms, no configure) <signal.h> defines it, and VSI C warns of
+the conflicting redefinition.  Define it only if the system has not.
+
+The VSI C RTL defines mempcpy() as a macro in <string.h>, so the
+declaration in mkcustom.h and the replacement in misc.c fail to compile
+(%CC-E-DECLARATOR).  config.h-vms cannot say HAVE_MEMPCPY, since older C
+RTLs lack it; skip both when mempcpy is a macro.
+
+--- a/src/makeint.h	2026-10-05 00:05:30.373136254 +0100
++++ b/src/makeint.h	2026-10-05 00:05:30.390556508 +0100
+@@ -124,7 +124,7 @@
+ # define sigmask(sig)   (1 << ((sig) - 1))
+ #endif
+ 
+-#ifndef HAVE_SA_RESTART
++#if !defined (HAVE_SA_RESTART) && !defined (SA_RESTART)
+ # define SA_RESTART 0
+ #endif
+ 
+--- a/src/misc.c	2026-10-05 00:05:30.373174190 +0100
++++ b/src/misc.c	2026-10-05 00:05:30.390643730 +0100
+@@ -892,7 +892,7 @@
+ }
+ #endif
+ 
+-#if !HAVE_MEMPCPY
++#if !HAVE_MEMPCPY && !defined (mempcpy)
+ void *
+ mempcpy (void *dest, const void *src, size_t n)
+ {
+--- a/src/mkcustom.h	2026-10-05 00:08:18.059069297 +0100
++++ b/src/mkcustom.h	2026-10-05 00:08:18.075688989 +0100
+@@ -56,7 +56,7 @@
+ int strncasecmp (const char *s1, const char *s2, size_t n);
+ #endif
+ 
+-#if !HAVE_MEMPCPY
++#if !HAVE_MEMPCPY && !defined (mempcpy)
+ void *mempcpy (void *dest, const void *src, size_t n);
+ #endif
+ 

@@ -1,0 +1,51 @@
+Subject: src/config.h-vms: include mkcustom.h by name; strerror, umask, stpcpy
+
+config.h-vms ends with #include "../src/mkcustom.h", a path relative to
+the build directory on Unix.  makefile.com compiles from the top of the
+tree with /NESTED=NONE and [.SRC] on the include path, so VSI C looks for
+[-.SRC]MKCUSTOM.H, outside the tree, and every compile fails
+(%CC-F-NOINCLFILEF).  Include it by name; [.SRC] is searched.
+
+Since 4.4 makeint.h declares its own umask() and mode_t unless HAVE_UMASK
+is defined, and misc.c its own strerror() unless HAVE_STRERROR is: both
+clash with the C RTL's declarations (%CC-E-NOLINKAGE, %CC-E-NOTCOMPAT).
+The C RTL has had both functions since its first release.
+
+misc.c also defines stpcpy() unless HAVE_STPCPY; with /PREFIX=ALL its
+DECC$STPCPY then clashes with the C RTL's in the link (%ILINK-W-MULDEF).
+<string.h> declares stpcpy() from __CRTL_VER 80500000: say so from then.
+
+--- a/src/config.h-vms	2023-01-08 15:45:24.000000000 +0000
++++ b/src/config.h-vms	2026-10-05 00:16:11.977982805 +0100
+@@ -51,7 +51,11 @@
+ #define LOCALEDIR ""
+ 
+ /* Define as 1 if you have the stpcpy function.  */
+-/* #undef HAVE_STPCPY */
++/* Define to 1 if you have the `stpcpy' function.  The C RTL declares it
++   from V8.5 (__CRTL_VER 80500000, also reported by VSI's V8.4-2L3).  */
++#if __CRTL_VER >= 80500000
++# define HAVE_STPCPY 1
++#endif
+ 
+ /* Define to 1 if the closedir function returns void instead of int.  */
+ /* #undef CLOSEDIR_VOID */
+@@ -292,6 +296,12 @@
+ /* Define to 1 if you have the strsignal function.  */
+ /* #undef HAVE_STRSIGNAL */
+ 
++/* Define to 1 if you have the `strerror' function.  */
++#define HAVE_STRERROR 1
++
++/* Define to 1 if you have the `umask' function.  */
++#define HAVE_UMASK 1
++
+ /* Define to 1 if you have the `strtoll' function. */
+ #define HAVE_STRTOLL 1
+ 
+@@ -430,4 +440,4 @@
+ #define MAKE_HOST "VMS"
+ 
+ /* Include customized declarations.  */
+-#include "../src/mkcustom.h"
++#include "mkcustom.h"

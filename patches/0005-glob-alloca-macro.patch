@@ -1,0 +1,18 @@
+Subject: lib/glob.c: do not declare alloca() when it is a macro
+
+Without GCC or <alloca.h>, glob.c declares "extern char *alloca ();".
+VSI C defines alloca as a macro for its __ALLOCA built-in, so the
+declaration does not parse (%CC-E-NOTEXPECTING).  A macro alloca needs
+no declaration: skip it then.
+
+--- a/lib/glob.c	2026-10-05 00:10:39.351085470 +0100
++++ b/lib/glob.c	2026-10-05 00:10:39.370290521 +0100
+@@ -148,7 +148,7 @@
+ #   ifndef _AIX
+ #    ifdef WINDOWS32
+ #     include <malloc.h>
+-#    else
++#    elif !defined alloca
+ extern char *alloca ();
+ #    endif /* WINDOWS32 */
+ #   endif /* Not _AIX.  */

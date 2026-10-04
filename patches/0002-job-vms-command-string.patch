@@ -1,0 +1,64 @@
+Subject: src/job.h, src/job.c: VMS command line as a string; no siggetmask
+
+On VMS start_job_command() hands child_execute_job() the command line as
+one string, and vmsjobs.c defines it with "char *argv"; job.h declares
+"char **argv", which VSI C rejects (%CC-E-NOTCOMPAT).  Declare the VMS
+form for VMS.
+
+construct_command_argv() is not used on VMS (its callers are all in
+non-VMS branches), and construct_command_argv_internal(), which it calls,
+is not compiled for VMS: the call was implicitly declared and left an
+undefined symbol in the link.  Compile it only when not on VMS.
+
+unblock_sigs() calls siggetmask(), which the C RTL lacks (undefined
+SIGGETMASK in the link); sigblock (0) returns the current mask, as
+vmsjobs.c already uses.
+
+--- a/src/job.h	2023-01-01 15:06:01.000000000 +0000
++++ b/src/job.h	2026-10-05 00:05:30.389575155 +0100
+@@ -78,7 +78,12 @@
+ char **construct_command_argv (char *line, char **restp, struct file *file,
+                                int cmd_flags, char** batch_file);
+ 
++#ifdef VMS
++/* On VMS the command is one string (see start_job_command).  */
++pid_t child_execute_job (struct childbase *child, int good_stdin, char *argv);
++#else
+ pid_t child_execute_job (struct childbase *child, int good_stdin, char **argv);
++#endif
+ 
+ #ifdef _AMIGA
+ void exec_command (char **argv) NORETURN;
+--- a/src/job.c	2023-02-22 01:53:48.000000000 +0000
++++ b/src/job.c	2026-10-05 00:16:11.978606800 +0100
+@@ -504,7 +504,12 @@
+ static void
+ unblock_sigs ()
+ {
++#ifdef VMS
++  /* The C RTL has no siggetmask(); sigblock (0) returns the mask.  */
++  sigsetmask (sigblock (0) & ~fatal_signal_mask);
++#else
+   sigsetmask (siggetmask () & ~fatal_signal_mask);
++#endif
+ }
+ 
+ void
+@@ -3709,6 +3714,9 @@
+    FILE is the target whose commands these are.  It is used for
+    variable expansion for $(SHELL) and $(IFS).  */
+ 
++#ifndef VMS
++/* VMS runs the command line as a string (see start_job_command) and has
++   no construct_command_argv_internal.  */
+ char **
+ construct_command_argv (char *line, char **restp, struct file *file,
+                         int cmd_flags, char **batch_filename)
+@@ -3801,6 +3809,7 @@
+ 
+   return argv;
+ }
++#endif /* !VMS */
+ 
+ #if !defined(HAVE_DUP2) && !defined(_AMIGA)
+ int

@@ -1,0 +1,29 @@
+Subject: src/vmsjobs.c: pass the pid of the struct child to LIB$SPAWN
+
+Since 4.4 child_execute_job() takes a struct childbase, which has no pid
+member (only struct child has), so the LIB$SPAWN calls that store the
+subprocess's pid in child->pid no longer compile (%CC-E-NEEDMEMBER).  On
+VMS it is only called from start_job_command() with a struct child (the
+callers in main.c and function.c are for other systems), and
+vmsHandleChildTerm() already casts it back; do the same here.
+
+--- a/src/vmsjobs.c	2026-10-05 00:08:18.059026213 +0100
++++ b/src/vmsjobs.c	2026-10-05 00:08:18.075557114 +0100
+@@ -1407,7 +1407,7 @@
+                      NULL, /* output-file */
+                      &spflags,                                 /* flags */
+                      &pnamedsc,                                /* proc name */
+-                     &child->pid, &child->cstatus, &child->efn,
++                     &((struct child *)child)->pid, &child->cstatus, &child->efn,
+                      0, 0,
+                      0, 0, 0);
+ 
+@@ -1423,7 +1423,7 @@
+                       NULL,
+                       &spflags,
+                       &pnamedsc,
+-                      &child->pid, &child->cstatus, &child->efn,
++                      &((struct child *)child)->pid, &child->cstatus, &child->efn,
+                       vmsHandleChildTerm, child,
+                       0, 0, 0);
+    status = child->vms_launch_status;

@@ -1,0 +1,6 @@
+# Ordered list of patches applied to the upstream tree (one per line).
+0001-config-h-vms-vsi-c.patch
+0002-job-vms-command-string.patch
+0003-sa-restart-mempcpy-macros.patch
+0004-vmsjobs-childbase-pid.patch
+0005-glob-alloca-macro.patch
