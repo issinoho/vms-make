@@ -1,0 +1,31 @@
+--
+-- PCSI product description for GNU make on OpenVMS.
+-- Template: tools/prepare.sh substitutes @PRODUCER@, @BASE@ and @PCSIVERSION@.
+--
+product @PRODUCER@ @BASE@ MAKE @PCSIVERSION@ full ;
+
+    information RELEASE_NOTES phase after ;
+
+    directory [MAKE] ;
+    directory [MAKE.BIN] ;
+    directory [MAKE.DOC] ;
+
+    file [MAKE.BIN]MAKE.EXE ;
+    file [SYS$STARTUP]MAKE$STARTUP.COM ;
+    file [MAKE]MAKE$SETUP.COM ;
+    file [MAKE.DOC]README.VMS ;
+    file [MAKE.DOC]COPYING. ;
+    file [MAKE.DOC]NEWS. ;
+    file [MAKE.DOC]MAKE.TXT ;
+    file [MAKE.DOC]MAKE.1 ;
+    file [MAKE.DOC]README_UPSTREAM.VMS ;
+
+    -- Define MAKE$ROOT now and print the post-installation tasks (PCSI shows
+    -- only the title of an information message unless /HELP is given).
+    execute postinstall "@PCSI$DESTINATION:[SYS$STARTUP]MAKE$STARTUP.COM INSTALL" interactive ;
+    -- On removal, deassign MAKE$ROOT.
+    execute install "CONTINUE" remove "@PCSI$DESTINATION:[SYS$STARTUP]MAKE$STARTUP.COM REMOVE" ;
+
+    information POST_INSTALL phase after ;
+
+end product ;

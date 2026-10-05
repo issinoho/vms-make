@@ -1,0 +1,18 @@
+=product @PRODUCER@ @BASE@ MAKE @PCSIVERSION@ full
+1 'PRODUCER
+=prompt @PRODUCER@
+1 'PRODUCT
+=prompt GNU make @VERSION@ for OpenVMS
+1 'NOTICE
+=prompt GNU make is free software under the GNU GPL, version 3 or later.
+1 RELEASE_NOTES
+=prompt Documentation is in [MAKE.DOC]README.VMS under the installation directory.
+1 POST_INSTALL
+=prompt Post-installation tasks for GNU make
+    At system startup: to define MAKE$ROOT at every boot, add this line to
+    SYS$MANAGER:SYSTARTUP_VMS.COM:
+    $ @SYS$STARTUP:MAKE$STARTUP.COM
+    For each user: to define the make and gmake commands, add this line to LOGIN.COM:
+    $ @MAKE$ROOT:[000000]MAKE$SETUP.COM
+
+PRODUCT REMOVE MAKE removes the product and deassigns MAKE$ROOT.

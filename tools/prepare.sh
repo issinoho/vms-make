@@ -55,4 +55,35 @@ step "makefile.com covers all $(echo "$unix" | wc -l) sources (less: $notvms)"
 
 printf 'VERSION=%s\nKIT_VERSION=%s-vms%s\n' "$UPSTREAM_VERSION" "$UPSTREAM_VERSION" \
     "$VMS_PATCH_LEVEL" > "$stage/vmsport/version.env"
+# --- PCSI kit inputs (vmsport/kit/MAKE_KIT.COM builds the kit on each node) --
+kit=$stage/vmsport/kit
+: "${KIT_PRODUCER:=ISSINOHO}"
+# Three-part versions (4.4.1): the third part is the PCSI update and our VMS
+# patch level the ECO, as in vms-awk, so 4.4.1-vms1 is V4.4-1E1.
+IFS=. read -r major minor update _ <<< "$UPSTREAM_VERSION"
+pcsiversion="V$major.$minor-${update:-0}E$VMS_PATCH_LEVEL"
+kitversion="$UPSTREAM_VERSION-vms$VMS_PATCH_LEVEL"
+subst() {
+    sed -e "s/@PRODUCER@/$KIT_PRODUCER/g" -e "s/@BASE@/$1/g" \
+        -e "s/@PCSIVERSION@/$pcsiversion/g" -e "s/@VERSION@/$UPSTREAM_VERSION/g" \
+        -e "s/@KITVERSION@/$kitversion/g" -e "s/@ARCH@/$2/g"
+}
+for base in I64VMS X86VMS; do
+    subst $base "" < "$kit/make.pcsi\$desc_template" > "$kit/MAKE-$base.PCSI\$DESC"
+    subst $base "" < "$kit/make.pcsi\$text_template" > "$kit/MAKE-$base.PCSI\$TEXT"
+done
+rm -f "$kit/make.pcsi\$desc_template" "$kit/make.pcsi\$text_template"
+subst "" "IA64 and x86-64" < "$kit/readme.vms" > "$kit/README.VMS"; rm -f "$kit/readme.vms"
+mkdir -p "$kit/doc"
+cp "$stage/doc/make.1" "$kit/doc/MAKE.1"
+cp "$stage/README.VMS" "$kit/doc/README_UPSTREAM.VMS"
+cp "$stage/COPYING" "$kit/doc/COPYING."
+cp "$stage/NEWS" "$kit/doc/NEWS."
+# The manual: the doc/make.info* files are plain text apart from Info's
+# control lines (no makeinfo needed on the host).
+cat "$stage/doc/make.info-"[0-9]* |
+    sed -e '/^\x1f/d' -e '/^Tag Table:/,$d' -e 's/\x7f[0-9]*//' |
+    tr -d '\000-\010\016-\037\177' > "$kit/doc/MAKE.TXT"
+printf 'KIT_PRODUCER=%s\nPCSI_VERSION=%s\nKIT_VERSION=%s\n' "$KIT_PRODUCER" "$pcsiversion" \
+    "$kitversion" > "$kit/kit.env"
 step "staged $stage"

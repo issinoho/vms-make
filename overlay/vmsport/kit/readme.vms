@@ -1,0 +1,64 @@
+GNU make for OpenVMS
+====================
+
+This is GNU make @VERSION@ built natively for OpenVMS @ARCH@, from the
+unmodified GNU release (whose own OpenVMS port it uses) plus the patches in
+the vms-make project:
+
+    https://github.com/issinoho/vms-make
+
+Kit version: @KITVERSION@.  GNU make is free software under the GNU General
+Public License, version 3 or later; see COPYING.  The manual is MAKE.TXT;
+MAKE.1 is the manual page.  README_UPSTREAM.VMS is GNU make's own notes on
+its OpenVMS port: read it for how makefiles behave when make runs from DCL.
+
+What is installed
+-----------------
+    MAKE$ROOT:[BIN]MAKE.EXE             make
+    MAKE$ROOT:[000000]MAKE$SETUP.COM    defines the make and gmake commands
+    MAKE$ROOT:[DOC]                     this file, README_UPSTREAM.VMS,
+                                        COPYING, NEWS, MAKE.TXT, MAKE.1
+    SYS$STARTUP:MAKE$STARTUP.COM        defines MAKE$ROOT
+
+Setting up
+----------
+The kit installs MAKE$STARTUP.COM into SYS$STARTUP and runs it once.  To
+define MAKE$ROOT at every boot, the system manager adds this line to
+SYS$MANAGER:SYSTARTUP_VMS.COM:
+
+    $ @SYS$STARTUP:MAKE$STARTUP.COM
+
+Each user (or SYLOGIN.COM, for everyone) then defines the commands:
+
+    $ @MAKE$ROOT:[000000]MAKE$SETUP.COM
+
+Makefiles on VMS
+----------------
+Run from DCL, make runs each recipe line as a DCL command in a subprocess.
+Makefiles are written for VMS: recipes are DCL commands, and a "$" that
+DCL should see (SYS$OUTPUT, F$SEARCH) is written "$$", as in any makefile.
+
+    out.txt : in.txt
+            copy in.txt out.txt
+
+    show :
+            write sys$$output "built $(words a b c) things"
+
+make looks for MAKEFILE.VMS, GNUMAKEFILE and MAKEFILE, in that order.  The
+details (comma-separated file lists, GNV$ settings, built-in rules for
+VMS) are in README_UPSTREAM.VMS.
+
+Things that differ from Unix
+----------------------------
+- Capturing make's output.  Run make at the terminal, in a batch job, with
+  PIPE (PIPE make > make.log) or with SPAWN/OUTPUT=make.log.  Do not
+  redirect it with DEFINE/USER SYS$OUTPUT: the subprocesses that run the
+  recipes cannot write to that file and fail with %DCL-W-UNDFIL.
+
+- Quote upper-case options and variable assignments ("CC=cc"), or SET
+  PROCESS/PARSE_STYLE=EXTENDED: with the default TRADITIONAL parse style
+  DCL changes the case of unquoted arguments.  Batch jobs use TRADITIONAL
+  even when interactive logins are set to EXTENDED.
+
+- Exit status.  Under DCL a failed make exits with an error severity, so
+  ON ERROR and IF .NOT. $STATUS work.

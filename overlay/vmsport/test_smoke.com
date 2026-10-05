@@ -1,6 +1,8 @@
 $! TEST_SMOKE.COM - smoke test for the built GNU make (MAKE.EXE at the top)
 $!
-$! Usage:  @[.VMSPORT]TEST_SMOKE
+$! Usage:  @[.VMSPORT]TEST_SMOKE [image]
+$! P1: the make image to test (default MAKE.EXE at the top of the tree; the
+$!     install check passes MAKE$ROOT:[BIN]MAKE.EXE).
 $! Runs make from DCL on small makefiles whose recipes are DCL commands
 $! (a "$" in a recipe is written "$$").  make's output is captured with PIPE:
 $! with SYS$OUTPUT redirected by DEFINE/USER the subprocesses that run the
@@ -13,6 +15,8 @@ $ vmsdir = f$parse(proc,,,"DEVICE") + f$parse(proc,,,"DIRECTORY")
 $ set default 'vmsdir'
 $ set default [-]
 $ make = "$" + f$parse("MAKE.EXE")
+$ if p1 .nes. "" then make = "$" + p1
+$ write sys$output "SMOKE: testing ", make - "$"
 $ pass = 0
 $ fail = 0
 $ if f$search("SMOKE.DIR") .eqs. "" then create/directory [.SMOKE]
