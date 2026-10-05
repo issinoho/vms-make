@@ -25,7 +25,7 @@ make 4.4 and VSI C, and adds our own VMS files in `vmsport/`.
 |---|---|---|
 | Builds with upstream's `makefile.com` | yes | yes |
 | DCL smoke test: version, a DCL recipe makes a target and a second run finds it up to date, `-n`, functions and a command-line variable in a recipe, a pattern rule with `$<` and `$@`, error statuses for a failing recipe and a missing makefile | 8/8 | 8/8 |
-| Kit install, smoke test on the installed image, remove | @IA64_IC@ | @X86_IC@ |
+| Kit install, smoke test on the installed image, remove | pending | pending |
 | PCSI kit (`MAKE`, `V4.4-1E1`) | `ISSINOHO-I64VMS-MAKE-V0404-1E1-1.PCSI` | `ISSINOHO-X86VMS-MAKE-V0404-1E1-1.PCSI` |
 
 ## Installing the kit
