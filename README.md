@@ -4,14 +4,16 @@
 
 # GNU make for OpenVMS
 
-[GNU make](https://www.gnu.org/software/make/) (**4.4.1**) built natively for OpenVMS on
-**IA64** and **x86-64**, following make's own releases. It belongs to the same family as
+[GNU make](https://www.gnu.org/software/make/) (**4.4.1**) built natively for OpenVMS on **IA64**
+and **x86-64**, following make's own releases. It belongs to the same family as
 [GNU grep](https://github.com/issinoho/vms-grep), [GNU sed](https://github.com/issinoho/vms-sed),
-[GNU awk](https://github.com/issinoho/vms-awk), [GNU m4](https://github.com/issinoho/vms-m4),
+[GNU awk](https://github.com/issinoho/vms-awk),
+[GNU diffutils](https://github.com/issinoho/vms-diffutils),
+[GNU patch](https://github.com/issinoho/vms-patch), [GNU m4](https://github.com/issinoho/vms-m4),
 [GNU Bison](https://github.com/issinoho/vms-bison), [flex](https://github.com/issinoho/vms-flex),
 [GNU Wget](https://github.com/issinoho/vms-wget), [curl](https://github.com/issinoho/vms-curl),
-[PCRE2](https://github.com/issinoho/vms-pcre2) and [zlib](https://github.com/issinoho/vms-zlib)
-for OpenVMS.
+[PCRE2](https://github.com/issinoho/vms-pcre2) and [zlib](https://github.com/issinoho/vms-zlib) for
+OpenVMS.
 
 Like gawk, **GNU make ships its own OpenVMS port**: `makefile.com` (a DCL build),
 `src/config.h-vms` and the VMS sources (`vmsjobs.c`, `vmsify.c`, ...). This repository builds
