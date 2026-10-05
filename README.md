@@ -21,11 +21,13 @@ make 4.4 and VSI C, and adds our own VMS files in `vmsport/`.
 
 ## Status
 
+**Released: [v4.4.1-vms1](https://github.com/issinoho/vms-make/releases/tag/v4.4.1-vms1).**
+
 | | IA64 (OpenVMS V8.4-2L3, VSI C 7.4) | x86-64 (OpenVMS E9.2-4, VSI C 7.7) |
 |---|---|---|
 | Builds with upstream's `makefile.com` | yes | yes |
 | DCL smoke test: version, a DCL recipe makes a target and a second run finds it up to date, `-n`, functions and a command-line variable in a recipe, a pattern rule with `$<` and `$@`, error statuses for a failing recipe and a missing makefile | 8/8 | 8/8 |
-| Kit install, smoke test on the installed image, remove | pending | pending |
+| Kit install, smoke test on the installed image, remove | clean | clean |
 | PCSI kit (`MAKE`, `V4.4-1E1`) | `ISSINOHO-I64VMS-MAKE-V0404-1E1-1.PCSI` | `ISSINOHO-X86VMS-MAKE-V0404-1E1-1.PCSI` |
 
 ## Installing the kit
@@ -118,7 +120,7 @@ The family of ports, all for IA64 and x86-64, each following its upstream releas
 | GNU m4 — [vms-m4](https://github.com/issinoho/vms-m4) | [v1.4.21-vms1](https://github.com/issinoho/vms-m4/releases/tag/v1.4.21-vms1) | the macro processor |
 | GNU Bison — [vms-bison](https://github.com/issinoho/vms-bison) | [v3.8.2-vms2](https://github.com/issinoho/vms-bison/releases/tag/v3.8.2-vms2) | the parser generator |
 | flex — [vms-flex](https://github.com/issinoho/vms-flex) | [v2.6.4-vms1](https://github.com/issinoho/vms-flex/releases/tag/v2.6.4-vms1) | the scanner generator; runs GNU m4 |
-| **GNU make** (this port) — [vms-make](https://github.com/issinoho/vms-make) | not yet released | built with make's own VMS port |
+| **GNU make** (this port) — [vms-make](https://github.com/issinoho/vms-make) | [v4.4.1-vms1](https://github.com/issinoho/vms-make/releases/tag/v4.4.1-vms1) | built with make's own VMS port |
 
 ## Artwork
 
