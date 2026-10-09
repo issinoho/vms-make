@@ -4,6 +4,8 @@
 
 # GNU make for OpenVMS
 
+[![Downloads](https://img.shields.io/github/downloads/issinoho/vms-make/total?label=downloads)](https://github.com/issinoho/vms-make/releases)
+
 [GNU make](https://www.gnu.org/software/make/) (**4.4.1**) built natively for OpenVMS on **IA64**
 and **x86-64**, following make's own releases. It belongs to the same family as
 [GNU grep](https://github.com/issinoho/vms-grep), [GNU sed](https://github.com/issinoho/vms-sed),
