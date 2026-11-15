@@ -6,11 +6,11 @@
 
 [![Release](https://img.shields.io/github/v/release/issinoho/vms-make?label=release)](https://github.com/issinoho/vms-make/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/issinoho/vms-make/total?label=downloads)](https://github.com/issinoho/vms-make/releases)
-![OpenVMS](https://img.shields.io/badge/OpenVMS-IA64%20%7C%20x86--64-blue)
+![OpenVMS](https://img.shields.io/badge/OpenVMS-IA64%20%7C%20x86--64%20%7C%20Alpha-blue)
 [![License](https://img.shields.io/github/license/issinoho/vms-make)](COPYING)
 
-[GNU make](https://www.gnu.org/software/make/) (**4.4.1**) built natively for OpenVMS on **IA64**
-and **x86-64**, following make's own releases. It belongs to the same family as
+[GNU make](https://www.gnu.org/software/make/) (**4.4.1**) built natively for OpenVMS on **IA64**,
+**x86-64** and **Alpha**, following make's own releases. It belongs to the same family as
 [GNU grep](https://github.com/issinoho/vms-grep), [GNU sed](https://github.com/issinoho/vms-sed),
 [GNU awk](https://github.com/issinoho/vms-awk),
 [GNU diffutils](https://github.com/issinoho/vms-diffutils),
@@ -38,6 +38,13 @@ make 4.4 and VSI C, and adds our own VMS files in `vmsport/`.
 | DCL smoke test: version, a DCL recipe makes a target and a second run finds it up to date, `-n`, functions and a command-line variable in a recipe, a pattern rule with `$<` and `$@`, error statuses for a failing recipe and a missing makefile | 8/8 | 8/8 |
 | Kit install, smoke test on the installed image, remove | clean | clean |
 | PCSI kit (`MAKE`, `V4.4-1E1`) | `ISSINOHO-I64VMS-MAKE-V0404-1E1-1.PCSI` | `ISSINOHO-X86VMS-MAKE-V0404-1E1-1.PCSI` |
+
+**Alpha (v4.4.1-vms2, a dedicated Alpha release; IA64 and x86-64 stay on vms1):** built on
+OpenVMS Alpha V8.4-2L2 with VSI C V7.4-002 by upstream's `makefile.com` (compiler warnings
+only); DCL smoke test 8/8; kit `ISSINOHO-AXPVMS-MAKE-V0404-1E2-1.PCSI`. make is compiled with
+IEEE floating point (`/FLOAT=IEEE_FLOAT/IEEE_MODE=DENORM_RESULTS`, added by patch 0006)
+instead of VSI C's G_float default on the Alpha. GNU make's own test suite needs Perl, which
+the Alpha does not have, so it was not run there. See [docs/TESTING.md](docs/TESTING.md).
 
 ## Installing the kit
 
@@ -93,8 +100,13 @@ with make 4.4 or current VSI C. The patches are VMS-only (`#ifdef VMS` or `confi
 | 0003 | `src/makeint.h`, `src/misc.c`, `src/mkcustom.h`: keep the system's `SA_RESTART` and the C RTL's `mempcpy` macro. |
 | 0004 | `src/vmsjobs.c`: `LIB$SPAWN` stores the pid in the `struct child` (make 4.4 passes a `struct childbase`). |
 | 0005 | `lib/glob.c`: no `alloca()` declaration when `alloca` is a macro. |
+| 0006 | `makefile.com`: on Alpha only, compile with `/FLOAT=IEEE_FLOAT/IEEE_MODE=DENORM_RESULTS` (VSI C defaults to G_float there). |
 
 ## How to build
+
+Needs a Linux host with git, bash, curl and gpg, and an OpenVMS IA64, x86-64 or Alpha node
+with VSI C and OpenSSH (no GNV, Perl, Python or MMS on the node). Tested on IA64 V8.4-2L3
+with VSI C 7.4, x86-64 E9.2-4 with VSI C 7.7, and Alpha V8.4-2L2 with VSI C V7.4-002.
 
 Set up `tools/nodes.conf` as described in
 [vms-grep's README](https://github.com/issinoho/vms-grep#2b-build-on-vms-from-the-host-over-ssh).
@@ -103,7 +115,7 @@ Set up `tools/nodes.conf` as described in
 git clone https://github.com/issinoho/vms-make.git
 cd vms-make
 tools/prepare.sh            # fetch + verify, patch, overlay, kit inputs
-tools/build.sh ia64         # upload, then @[.VMSPORT]BUILD (upstream's makefile.com)
+tools/build.sh ia64         # (or x86, alpha) upload, then @[.VMSPORT]BUILD (upstream's makefile.com)
 tools/build.sh ia64 ALL KEEP_GOING   # compile everything, listing every failure
 tools/test.sh ia64          # smoke test
 tools/kit.sh ia64           # PCSI kit -> out/kits/
@@ -113,7 +125,7 @@ tools/kit.sh ia64           # PCSI kit -> out/kits/
 
 1. GNU make's own test suite (Perl) on VMS.
 2. Offer the patches to GNU make's VMS port.
-3. A port to OpenVMS **Alpha**.
+3. ~~A port to OpenVMS **Alpha**.~~ Done: see Status (Alpha kit, patch level 2).
 
 The family of ports, all for IA64 and x86-64 (MariaDB: x86-64 only), each following its upstream releases:
 

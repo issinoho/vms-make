@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Guidance for working in this repository: GNU make for OpenVMS (IA64 and x86-64), built
+Guidance for working in this repository: GNU make for OpenVMS (IA64, x86-64 and Alpha), built
 with **make's own upstream VMS port** (`makefile.com`, `src/config.h-vms`, `src/vms*.c` in
 the release tarball), wrapped by the same tooling as `~/projects/vms-awk`. Read README.md
 first.
@@ -21,6 +21,24 @@ first.
   `%DCL-W-UNDFIL`; PIPE, SPAWN/OUTPUT, terminal and batch work. Tests capture with PIPE.
 - **Writing test makefiles in DCL:** recipe `$` must be `$$`; make's `@` prefix in front of
   a DCL command misfires; a `CREATE` data line beginning with `$` ends the data.
+
+## Alpha
+
+- `build.sh`/`test.sh`/`kit.sh`/`installcheck.sh` use `vms.sh batch` there (interactive ssh
+  output is unreliable; a batch job starts in the login directory, so each job sets default
+  to the work directory). `vms.sh` is vms-grep's (it retries a command that never started).
+- DCL: compare architecture names with `.EQS.`, never `.EQ.` (integer compare: every name
+  equals every other). `build.com`, `make_kit.com` and `vms_installcheck.com` upper-case
+  `F$GETSYI("ARCH_NAME")`. Upstream's `makefile.com` did not look at the architecture at all
+  (it takes whatever VSI C defaults to); patch 0006 adds the float qualifiers on Alpha with
+  an upper-cased `.EQS.` test.
+- Float: VSI C on Alpha defaults to G_float, IA64 and x86-64 to IEEE. make uses doubles only
+  for `-l` (load limit; `getloadavg` is unsupported on VMS) and its `atof`, so it barely
+  matters, but patch 0006 compiles with `/FLOAT=IEEE_FLOAT/IEEE_MODE=DENORM_RESULTS`. The
+  KEEP_GOING loop in `build.com` passes the same qualifiers.
+- The AXPVMS kit has its own README (`README_AXPVMS.VMS`). Patch level 2 is the Alpha kit; the
+  x86-64 and IA64 kits stay on 1.
+- No Perl on the Alpha: make's upstream suite cannot run there; only the DCL smoke test.
 
 ## Ground rules
 
@@ -43,7 +61,7 @@ first.
 
 ```sh
 tools/prepare.sh                        # always first after changing patches/overlay
-tools/build.sh <ia64|x86> [ALL|CLEAN] [KEEP_GOING]
+tools/build.sh <ia64|x86|alpha> [ALL|CLEAN] [KEEP_GOING]
 tools/test.sh <node>                    # DCL smoke test
 tools/vms.sh <node> dcl '<cmd>' ...     # run DCL; also run/batch/put/get
 tools/kit.sh <node>                     # PCSI kit -> out/kits/ (producer ISSINOHO)

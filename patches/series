@@ -4,3 +4,4 @@
 0003-sa-restart-mempcpy-macros.patch
 0004-vmsjobs-childbase-pid.patch
 0005-glob-alloca-macro.patch
+0006-makefile-com-alpha-ieee-float.patch

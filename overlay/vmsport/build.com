@@ -63,7 +63,9 @@ $kg_loop:
 $ cfile = f$element(n, " ", list)
 $ if cfile .eqs. " " .or. cfile .eqs. "" then goto kg_done
 $ objdir = f$extract(0, f$locate("]", cfile) + 1, cfile)
-$ cc/decc/prefix=(all,except=(globfree,glob))/warn=(disable=questcompare) -
+$ if arch .eqs. "ALPHA" then fltq = "/float=ieee_float/ieee_mode=denorm_results"
+$ if arch .nes. "ALPHA" then fltq = ""
+$ cc/decc/prefix=(all,except=(globfree,glob))/warn=(disable=questcompare)'fltq' -
     /nested=none/include=([],[.src],[.lib])/obj='objdir' -
     /define=("allocated_variable_expand_for_file=alloc_var_expand_for_file",-
     "unlink=remove","HAVE_CONFIG_H","VMS") 'cfile'

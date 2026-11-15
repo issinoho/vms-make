@@ -1,0 +1,20 @@
+Subject: makefile.com: compile with IEEE floating point on Alpha
+
+VSI C on Alpha defaults to /FLOAT=G_FLOAT, unlike IA64 and x86-64 (IEEE).
+make uses doubles only for the -l load limit and its parsing, but IEEE is
+what the other VMS ports use.  Add /FLOAT=IEEE_FLOAT/IEEE_MODE=DENORM_RESULTS
+on Alpha only (ARCH_NAME compared as an upper-case string with .EQS.).
+
+--- a/makefile.com
++++ b/makefile.com
+@@ -49,6 +49,10 @@
+ $   endif
+ $ endif
+ $!
++$! VSI C on Alpha defaults to G_FLOAT doubles; IA64 and x86-64 are IEEE
++$! already.  Ask for IEEE T_float on Alpha, as the other ports do.
++$ if f$edit(f$getsyi("ARCH_NAME"),"UPCASE") .eqs. "ALPHA" -
++  then ccopt = ccopt + "/float=ieee_float/ieee_mode=denorm_results"
+ $!
+ $ if (p1 .eqs. "LIST")
+ $ then
